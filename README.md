@@ -23,7 +23,7 @@ npm run dev
 
 ## Deploy
 
-Deployed on Vercel: [live demo](#) ← add link after deploy
+Live demo: https://1r444444.github.io/frontend-interview-simulator/
 
 ## Project Structure
 
