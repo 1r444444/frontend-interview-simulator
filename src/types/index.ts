@@ -12,3 +12,8 @@ export interface TopicProgress {
 }
 
 export type Progress = Record<Topic, TopicProgress>
+
+export interface Profile {
+  username: string
+  avatar: string
+}

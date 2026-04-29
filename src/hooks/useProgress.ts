@@ -48,5 +48,11 @@ export function useProgress() {
     })
   }
 
-  return { progress, markCompleted, resetTopic }
+  function resetAll() {
+    const fresh = defaultProgress()
+    saveProgress(fresh)
+    setProgress(fresh)
+  }
+
+  return { progress, markCompleted, resetTopic, resetAll }
 }
