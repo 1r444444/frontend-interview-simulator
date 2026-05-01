@@ -1,19 +1,20 @@
-export type Topic = 'javascript' | 'typescript' | 'react'
+export type Level = 'junior' | 'middle' | 'senior'
+export type QuestionType = 'mcq' | 'open' | 'code'
 
 export interface Question {
   id: number
-  topic: Topic
+  level: Level
+  type: QuestionType
   question: string
   answer: string
+  hint?: string
+  codeTemplate?: string
+  options?: string[]
+  correctIndex?: number
 }
 
-export interface TopicProgress {
+export interface LevelProgress {
   completed: number[]
 }
 
-export type Progress = Record<Topic, TopicProgress>
-
-export interface Profile {
-  username: string
-  avatar: string
-}
+export type Progress = Record<Level, LevelProgress>

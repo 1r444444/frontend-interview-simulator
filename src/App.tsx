@@ -1,63 +1,74 @@
 import { useState } from 'react'
-import type { Topic } from './types'
-import { questionsByTopic } from './data/questions'
+import type { Level } from './types'
+import { questionsByLevel } from './data/questions'
 import { useProgress } from './hooks/useProgress'
-import { LandingPage } from './components/LandingPage'
+import { WelcomePage } from './components/WelcomePage'
+import { LevelSelect } from './components/LevelSelect'
 import { QuizScreen } from './components/QuizScreen'
 import { ResultsScreen } from './components/ResultsScreen'
 
-type Screen = 'landing' | 'quiz' | 'results'
+type Screen = 'welcome' | 'level' | 'quiz' | 'results'
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('landing')
-  const [topic, setTopic] = useState<Topic | null>(null)
-  const { progress, markCompleted, resetTopic } = useProgress()
+  const [screen, setScreen] = useState<Screen>('welcome')
+  const [level, setLevel] = useState<Level | null>(null)
+  const [selectedLevel, setSelectedLevel] = useState<Level | null>(null)
+  const [score, setScore] = useState({ correct: 0, total: 0 })
+  const { progress, markCompleted, resetLevel, resetAll } = useProgress()
 
-  function startTopic(t: Topic) {
-    setTopic(t)
+  function handleStartQuiz() {
+    if (!selectedLevel) return
+    setLevel(selectedLevel)
+    setScore({ correct: 0, total: 0 })
     setScreen('quiz')
   }
 
-  function handleFinish() {
+  function handleFinish(correct: number, total: number) {
+    setScore({ correct, total })
     setScreen('results')
   }
 
   function handleRestart() {
-    if (topic) {
-      resetTopic(topic)
-      setScreen('quiz')
-    }
-  }
-
-  if (screen === 'landing' || !topic) {
-    return (
-      <LandingPage
-        progress={progress}
-        onStart={startTopic}
-        onReset={resetTopic}
-      />
-    )
-  }
-
-  if (screen === 'results') {
-    return (
-      <ResultsScreen
-        topic={topic}
-        total={questionsByTopic(topic).length}
-        onRestart={handleRestart}
-        onBack={() => setScreen('landing')}
-      />
-    )
+    if (!level) return
+    resetLevel(level)
+    setScore({ correct: 0, total: 0 })
+    setScreen('quiz')
   }
 
   return (
-    <QuizScreen
-      topic={topic}
-      questions={questionsByTopic(topic)}
-      completedIds={progress[topic].completed}
-      onComplete={(id) => markCompleted(topic, id)}
-      onFinish={handleFinish}
-      onBack={() => setScreen('landing')}
-    />
+    <>
+      {screen === 'welcome' && (
+        <WelcomePage onStart={() => setScreen('level')} />
+      )}
+
+      {screen === 'level' && (
+        <LevelSelect
+          selectedLevel={selectedLevel}
+          onSelect={setSelectedLevel}
+          onStart={handleStartQuiz}
+        />
+      )}
+
+      {screen === 'quiz' && level && (
+        <QuizScreen
+          level={level}
+          questions={questionsByLevel(level)}
+          completedIds={progress[level].completed}
+          onComplete={(id) => markCompleted(level, id)}
+          onFinish={handleFinish}
+          onBack={() => setScreen('level')}
+        />
+      )}
+
+      {screen === 'results' && level && (
+        <ResultsScreen
+          level={level}
+          correct={score.correct}
+          total={score.total}
+          onRestart={handleRestart}
+          onBack={() => { resetAll(); setScreen('welcome') }}
+        />
+      )}
+    </>
   )
 }

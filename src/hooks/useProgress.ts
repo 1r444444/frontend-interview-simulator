@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import type { Topic, Progress } from '../types'
+import type { Level, Progress } from '../types'
 
-const STORAGE_KEY = 'fis_progress'
+const STORAGE_KEY = 'fis_progress_v2'
 
 const defaultProgress = (): Progress => ({
-  javascript: { completed: [] },
-  typescript: { completed: [] },
-  react: { completed: [] },
+  junior: { completed: [] },
+  middle: { completed: [] },
+  senior: { completed: [] },
 })
 
 function loadProgress(): Progress {
@@ -25,14 +25,14 @@ function saveProgress(progress: Progress) {
 export function useProgress() {
   const [progress, setProgress] = useState<Progress>(loadProgress)
 
-  function markCompleted(topic: Topic, questionId: number) {
+  function markCompleted(level: Level, questionId: number) {
     setProgress((prev) => {
       const updated = {
         ...prev,
-        [topic]: {
-          completed: prev[topic].completed.includes(questionId)
-            ? prev[topic].completed
-            : [...prev[topic].completed, questionId],
+        [level]: {
+          completed: prev[level].completed.includes(questionId)
+            ? prev[level].completed
+            : [...prev[level].completed, questionId],
         },
       }
       saveProgress(updated)
@@ -40,9 +40,9 @@ export function useProgress() {
     })
   }
 
-  function resetTopic(topic: Topic) {
+  function resetLevel(level: Level) {
     setProgress((prev) => {
-      const updated = { ...prev, [topic]: { completed: [] } }
+      const updated = { ...prev, [level]: { completed: [] } }
       saveProgress(updated)
       return updated
     })
@@ -54,5 +54,5 @@ export function useProgress() {
     setProgress(fresh)
   }
 
-  return { progress, markCompleted, resetTopic, resetAll }
+  return { progress, markCompleted, resetLevel, resetAll }
 }
