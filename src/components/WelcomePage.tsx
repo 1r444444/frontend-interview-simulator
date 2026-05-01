@@ -1,10 +1,25 @@
+import type { Profile } from '../types'
+
 interface Props {
+  profile: Profile
   onStart: () => void
+  onProfile: () => void
 }
 
-export function WelcomePage({ onStart }: Props) {
+export function WelcomePage({ profile, onStart, onProfile }: Props) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ backgroundColor: '#FAF8F5' }}>
+    <div className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#FAF8F5' }}>
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={onProfile}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl border border-stone-200 bg-white hover:shadow-sm transition-all text-sm text-gray-700 font-medium"
+        >
+          <span className="text-xl">{profile.avatar}</span>
+          {profile.name ? profile.name : 'Профиль'}
+        </button>
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center">
       <div className="max-w-2xl w-full text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Frontend Interview Simulator
@@ -59,6 +74,7 @@ export function WelcomePage({ onStart }: Props) {
         >
           Начать практику
         </button>
+      </div>
       </div>
     </div>
   )

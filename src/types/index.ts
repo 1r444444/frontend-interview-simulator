@@ -1,6 +1,12 @@
 export type Level = 'junior' | 'middle' | 'senior'
 export type QuestionType = 'mcq' | 'open' | 'code'
 
+export interface Profile {
+  name: string
+  goal: string
+  avatar: string
+}
+
 export interface Question {
   id: number
   level: Level

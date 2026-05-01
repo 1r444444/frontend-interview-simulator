@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import type { Level } from './types'
+import type { Level, Profile } from './types'
 import { questionsByLevel } from './data/questions'
 import { useProgress } from './hooks/useProgress'
+import { useProfile } from './hooks/useProfile'
 import { WelcomePage } from './components/WelcomePage'
 import { LevelSelect } from './components/LevelSelect'
 import { QuizScreen } from './components/QuizScreen'
 import { ResultsScreen } from './components/ResultsScreen'
+import { ProfilePage } from './components/ProfilePage'
 
-type Screen = 'welcome' | 'level' | 'quiz' | 'results'
+type Screen = 'welcome' | 'level' | 'quiz' | 'results' | 'profile'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('welcome')
@@ -15,6 +17,7 @@ export default function App() {
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null)
   const [score, setScore] = useState({ correct: 0, total: 0 })
   const { progress, markCompleted, resetLevel, resetAll } = useProgress()
+  const { profile, saveProfile } = useProfile()
 
   function handleStartQuiz() {
     if (!selectedLevel) return
@@ -35,10 +38,18 @@ export default function App() {
     setScreen('quiz')
   }
 
+  function handleSaveProfile(p: Profile) {
+    saveProfile(p)
+  }
+
   return (
     <>
       {screen === 'welcome' && (
-        <WelcomePage onStart={() => setScreen('level')} />
+        <WelcomePage
+          profile={profile}
+          onStart={() => setScreen('level')}
+          onProfile={() => setScreen('profile')}
+        />
       )}
 
       {screen === 'level' && (
@@ -66,7 +77,18 @@ export default function App() {
           correct={score.correct}
           total={score.total}
           onRestart={handleRestart}
-          onBack={() => { resetAll(); setScreen('welcome') }}
+          onBack={() => setScreen('welcome')}
+        />
+      )}
+
+      {screen === 'profile' && (
+        <ProfilePage
+          profile={profile}
+          progress={progress}
+          onSave={handleSaveProfile}
+          onResetLevel={resetLevel}
+          onResetAll={resetAll}
+          onBack={() => setScreen('welcome')}
         />
       )}
     </>
